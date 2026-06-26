@@ -374,9 +374,6 @@ function(define_libcxx_sub target target_suffix extra_target_flags extra_libdir_
     COMMAND
       ${CMAKE_COMMAND} -E chdir .. bash -c
         "git apply ${CMAKE_SOURCE_DIR}/src/llvm-pr-186054.patch || git apply ${CMAKE_SOURCE_DIR}/src/llvm-pr-186054.patch -R --check"
-    COMMAND
-      ${CMAKE_COMMAND} -E chdir .. bash -c
-        "git apply ${CMAKE_SOURCE_DIR}/src/llvm-pr-185770.patch || git apply ${CMAKE_SOURCE_DIR}/src/llvm-pr-185770.patch -R --check"
   )
   add_dependencies(libcxx-${target} libcxx-${target}${target_suffix}-build)
 endfunction()
@@ -416,9 +413,13 @@ function(define_libcxx target)
   add_dependencies(libcxx-${target} libcxx-${target}-extra-dir)
 endfunction()
 
-foreach(target IN LISTS WASI_SDK_TARGETS)
-  define_libcxx(${target})
-endforeach()
+if (WASI_SDK_COMPILER_RT_ONLY)
+  message(STATUS "WASI_SDK_COMPILER_RT_ONLY=ON, skipping libcxx and wasi-libc builds")
+else()
+  foreach(target IN LISTS WASI_SDK_TARGETS)
+    define_libcxx(${target})
+  endforeach()
+endif()
 
 # =============================================================================
 # misc build logic
