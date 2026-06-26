@@ -56,12 +56,28 @@ make_deb() {
 
 for build in dist-*; do
   toolchain=`ls $build/wasi-toolchain-*`
+   if [ -f $build/libclang_rt* ]; then
+    compiler_rt=`ls $build/libclang_rt*`
+  else
+    compiler_rt=`ls dist-x86_64-linux/libclang_rt*`
+  fi
   sdk_dir=`basename $toolchain | sed 's/.tar.gz//' | sed s/toolchain/sdk/`
   mkdir dist/$sdk_dir
   tar xf $toolchain -C dist/$sdk_dir --strip-components 1
   tar czf dist/$sdk_dir.tar.gz -C dist $sdk_dir
+
+  # Setup the compiler-rt library for all targets.
+  rtlibdir=$(dirname $(find dist/$sdk_dir/lib -name include))/lib
+  mkdir -p $rtlibdir
+  tar xf $compiler_rt -C $rtlibdir --strip-components 1
+
   if echo $build | grep -q linux; then
     make_deb $build dist/$sdk_dir
   fi
   rm -rf dist/$sdk_dir
 done
+
+# In addition to `wasi-sdk-*` also preserve artifacts for just compiler-rt.
+if [ -d dist-x86_64-linux ]; then
+  cp dist-x86_64-linux/libclang_rt* dist
+fi
