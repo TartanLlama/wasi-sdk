@@ -38,6 +38,7 @@ cmake -G Ninja -B $build_dir/sysroot -S . \
   -DCMAKE_CXX_COMPILER_WORKS=ON \
   -DWASI_SDK_INCLUDE_TESTS=ON \
   -DWASI_SDK_EXCEPTIONS=DUAL \
+  -DWASI_SDK_COMPILER_RT_ONLY=$([ "$WASI_SDK_CI_COMPILER_RT_ONLY" = "1" ] && echo "ON" || echo "OFF") \
   "-DCMAKE_INSTALL_PREFIX=$build_dir/install"
 ninja -C $build_dir/sysroot install dist -v
 
