@@ -212,6 +212,7 @@ jobs:
             -DCMAKE_SYSTEM_NAME=WASI \
             -DWASI_SDK_INCLUDE_TESTS=ON \
             -DWASI_SDK_CPU_CFLAGS="" \
+            -DWASI_SDK_COMPILER_RT_ONLY=ON \
             -DCMAKE_C_LINKER_DEPFILE_SUPPORTED=OFF \
             -DCMAKE_CXX_LINKER_DEPFILE_SUPPORTED=OFF \
             ${{ matrix.defines }}
